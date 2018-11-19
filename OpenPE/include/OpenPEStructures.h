@@ -388,6 +388,49 @@ namespace OpenPE
 		MAX_PACKAGE_NAME							= 1024,
 	};
 
+	// IMPORTS
+	struct IMAGE_THUNK_DATA32
+	{
+		union
+		{
+			uint32_t		iForwarderString;
+			uint32_t		iFunction;
+			uint32_t		iOrdinal;
+			uint32_t		iAddressOfData;
+		} u1;
+	};
+		
+	#pragma pack(push, 8)
+	struct IMAGE_THUNK_DATA64
+	{
+		union
+		{
+			uint64_t		iForwarderString;
+			uint64_t		iFunction;
+			uint64_t		iOrdinal;
+			uint64_t		iAddressOfData;
+		} u1;
+	};
+	#pragma pack(pop, 8)
+
+	struct IMAGE_IMPORT_DESCRIPTOR
+	{
+		union
+		{
+			uint32_t		iCharacteristics;			// 0 for terminating null import descriptor
+			uint32_t		iOriginalFirstThunk;		// RVA to original unbound IAT (PIMAGE_THUNK_DATA)
+		};
+
+		uint32_t			iTimeStamp;					// 0 if not bound,
+														// -1 if bound, and real date\time stamp
+														//     in IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT (new BIND)
+														// O.W. date/time stamp of DLL bound to (Old BIND)
+
+		uint32_t			iForwarderChain;			// -1 if no Forwarders
+		uint32_t			iName;
+		uint32_t			iFirstThunk;				// RVA to IAT (if bound this IAT has actual addresses)
+	};
+
 //#define SAVE_ISTREAM_STATE(__iFileStream__) \
 //	std::ios_base::iostate iState = __iFileStream__.exceptions(); \
 //	std::streamoff oldStreamOffset = __iFileStream__.tellg(); \

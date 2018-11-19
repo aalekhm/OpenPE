@@ -36,6 +36,23 @@ namespace OpenPE
 				return x1 <= static_cast<uint32_t>(-1) - x2;
 			}
 
+			// Returns true if string "data" with maximum length "raw_length" is null-terminated
+			template<typename T>
+			static bool isNullTerminated(const T* data, size_t iRawLength)
+			{
+				iRawLength /= sizeof(T);
+
+				for (size_t i = 0; i < iRawLength; i++)
+				{
+					if (data[i] == static_cast<T>(L'\0'))
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+
 			static const uint32_t TWO_GB = 0x80000000;
 			static const uint32_t MAX_DWORD = 0xFFFF0000;
 			static const uint32_t MAX_WORD = 0x0000FFFF;

@@ -209,13 +209,13 @@ namespace OpenPE
 			//Returns corresponding section data pointer from VA inside section (checks rva, checks sizes, the most safe function)
 			//If bIncludeHeaders = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
 			template<typename T>
-			T section_data_from_va(uint32_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const
+			T getSectionDataFromVA(uint32_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const
 			{
 				return getSectionDataFromRVA<T>(getVAToRVA(iVA), eSectionDataType, bIncludeHeaders);
 			}
 
 			template<typename T>
-			T getSectionDataFromRVA(uint64_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const
+			T getSectionDataFromVA(uint64_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const
 			{
 				return getSectionDataFromRVA<T>(getVAToRVA(iVA), eSectionDataType, bIncludeHeaders);
 			}

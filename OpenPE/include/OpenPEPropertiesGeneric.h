@@ -6,7 +6,7 @@ namespace OpenPE
 	template<
 		typename		NTHeadersType,
 		typename		OptionalHeadersType,
-		uint32_t		iIDValue,
+		uint16_t		iIDValue,
 		typename		BaseSizeType,
 		BaseSizeType	ImportSnapFlagValue,
 		typename		TLSStructType,
@@ -15,14 +15,14 @@ namespace OpenPE
 	class PETypes
 	{
 		public:
-			typedef NTHeadersType				NTHeader;							// NT Header
-			typedef OptionalHeadersType			OptionalHeader;						// NT Optional Header
-			typedef BaseSizeType				BaseSize;							// BaseSize: DWORD(32-bit) or ULONGLONG(64-bit)
-			typedef TLSStructType				TLSStruct;							// TLS Structure type
-			typedef ConfigStructType			ConfigStruct;						// Configuration Structure type
+			typedef NTHeadersType				NTHeader;								// NT Header
+			typedef OptionalHeadersType			OptionalHeader;							// NT Optional Header
+			typedef BaseSizeType				BaseSize;								// BaseSize: DWORD(32-bit) or ULONGLONG(64-bit)
+			typedef TLSStructType				TLSStruct;								// TLS Structure type
+			typedef ConfigStructType			ConfigStruct;							// Configuration Structure type
 
-			static const uint32_t				ID = iIDValue;					// Magic for PE(32-bit) / PE+(64-bit)
-			static const BaseSizeType			ImportSnapFlag = ImportSnapFlagValue;	// Import Snap Flag value
+			static const uint16_t				ID = iIDValue;							// Magic for PE(32-bit) / PE+(64-bit)
+			static const BaseSize				ImportSnapFlag = ImportSnapFlagValue;	// Import Snap Flag value
 	};
 
 	template<typename PEClassType>

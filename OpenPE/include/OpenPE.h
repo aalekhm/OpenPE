@@ -5,3 +5,4 @@
 #include "OpenPEFactory.h"
 #include "OpenPEChecksum.h"
 #include "OpenPEDotNet.h"
+#include "OpenPEImports.h"
