@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1_AddressConvertions", "Sam
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2_BasicDotNetViewer", "Samples\2_BasicDotNetViewer\2_BasicDotNetViewer.vcxproj", "{1C4158DC-B24D-47AA-BADF-FBA8DBE941A2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3_SectionsAndAddresses", "Samples\3_SectionsAndAddresses\3_SectionsAndAddresses.vcxproj", "{498C6B9B-2188-43F9-88AF-BA35D9984364}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -39,6 +41,10 @@ Global
 		{1C4158DC-B24D-47AA-BADF-FBA8DBE941A2}.Debug|Win32.Build.0 = Debug|Win32
 		{1C4158DC-B24D-47AA-BADF-FBA8DBE941A2}.Release|Win32.ActiveCfg = Release|Win32
 		{1C4158DC-B24D-47AA-BADF-FBA8DBE941A2}.Release|Win32.Build.0 = Release|Win32
+		{498C6B9B-2188-43F9-88AF-BA35D9984364}.Debug|Win32.ActiveCfg = Debug|Win32
+		{498C6B9B-2188-43F9-88AF-BA35D9984364}.Debug|Win32.Build.0 = Debug|Win32
+		{498C6B9B-2188-43F9-88AF-BA35D9984364}.Release|Win32.ActiveCfg = Release|Win32
+		{498C6B9B-2188-43F9-88AF-BA35D9984364}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,5 +55,6 @@ Global
 		{C33D1728-AA68-4DDA-ADF5-88AC18E1246F} = {3727518B-49D8-4A28-B363-DD50D2C59FE3}
 		{199B6304-B579-4CCE-967F-A060B08A4A1C} = {3727518B-49D8-4A28-B363-DD50D2C59FE3}
 		{1C4158DC-B24D-47AA-BADF-FBA8DBE941A2} = {3727518B-49D8-4A28-B363-DD50D2C59FE3}
+		{498C6B9B-2188-43F9-88AF-BA35D9984364} = {3727518B-49D8-4A28-B363-DD50D2C59FE3}
 	EndGlobalSection
 EndGlobal

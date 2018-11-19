@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
 
 	try
 	{
+		// Create an instance of PE or PE + class using the factory
 		PEBase peImage(PEFactory::createPE(peFile, false));
 
 		std::cout << "***** OpenPE *****"			<< std::hex << std::showbase								<< std::endl;

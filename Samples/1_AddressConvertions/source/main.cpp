@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 {
 	if (argc NOT_EQUAL_TO 2)
 	{
-		std::cout << "Usage: BasicFileViewer.exe PE_FILE" << std::endl;
+		std::cout << "Usage: AddressConventions.exe PE_FILE" << std::endl;
 		return 0;
 	}
 
@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
 
 	try
 	{
+		// Create an instance of PE or PE + class using the factory
 		PEBase peImage(PEFactory::createPE(peFile, false));
 
 		std::cout << "***** OpenPE *****" << std::hex << std::showbase << std::endl;
