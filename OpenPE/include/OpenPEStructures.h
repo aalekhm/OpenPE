@@ -431,6 +431,22 @@ namespace OpenPE
 		uint32_t			iFirstThunk;				// RVA to IAT (if bound this IAT has actual addresses)
 	};
 
+	// EXPORTS
+	struct IMAGE_EXPORT_DIRECTORY
+	{
+		uint32_t			iCharacteristics;
+		uint32_t			iTimeDateStamp;
+		uint16_t			iMajorVersion;
+		uint16_t			iMinorVersion;
+		uint32_t			iName;
+		uint32_t			iBase;
+		uint32_t			iNumberOfFunctions;
+		uint32_t			iNumberOfNames;
+		uint32_t			iAddressOfFunctions;     // RVA from base of image
+		uint32_t			iAddressOfNames;         // RVA from base of image
+		uint32_t			iAddressOfNameOrdinals;  // RVA from base of image
+	};	
+
 //#define SAVE_ISTREAM_STATE(__iFileStream__) \
 //	std::ios_base::iostate iState = __iFileStream__.exceptions(); \
 //	std::streamoff oldStreamOffset = __iFileStream__.tellg(); \

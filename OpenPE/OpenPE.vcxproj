@@ -77,6 +77,7 @@
     <ClInclude Include="include\OpenPEDirectory.h" />
     <ClInclude Include="include\OpenPEDotNet.h" />
     <ClInclude Include="include\OpenPEException.h" />
+    <ClInclude Include="include\OpenPEExports.h" />
     <ClInclude Include="include\OpenPEFactory.h" />
     <ClInclude Include="include\OpenPEImports.h" />
     <ClInclude Include="include\OpenPEIProperties.h" />
@@ -91,6 +92,7 @@
     <ClCompile Include="source\OpenPEDirectory.cpp" />
     <ClCompile Include="source\OpenPEDotNet.cpp" />
     <ClCompile Include="source\OpenPEException.cpp" />
+    <ClCompile Include="source\OpenPEExports.cpp" />
     <ClCompile Include="source\OpenPEFactory.cpp" />
     <ClCompile Include="source\OpenPEImports.cpp" />
     <ClCompile Include="source\OpenPEPropertiesGeneric.cpp" />

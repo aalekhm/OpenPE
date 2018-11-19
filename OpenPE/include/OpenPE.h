@@ -6,3 +6,4 @@
 #include "OpenPEChecksum.h"
 #include "OpenPEDotNet.h"
 #include "OpenPEImports.h"
+#include "OpenPEExports.h"

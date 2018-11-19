@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4_PESectionsReader", "Sampl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "5_ImportsReader", "Samples\5_ImportsReader\5_ImportsReader.vcxproj", "{80FD35A9-3E1C-4AAD-990C-5BE9265334A9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "6_ExportsReader", "Samples\6_ExportsReader\6_ExportsReader.vcxproj", "{9E81D1FA-B308-4B5A-9189-44BB9A2B65F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -57,6 +59,10 @@ Global
 		{80FD35A9-3E1C-4AAD-990C-5BE9265334A9}.Debug|Win32.Build.0 = Debug|Win32
 		{80FD35A9-3E1C-4AAD-990C-5BE9265334A9}.Release|Win32.ActiveCfg = Release|Win32
 		{80FD35A9-3E1C-4AAD-990C-5BE9265334A9}.Release|Win32.Build.0 = Release|Win32
+		{9E81D1FA-B308-4B5A-9189-44BB9A2B65F8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9E81D1FA-B308-4B5A-9189-44BB9A2B65F8}.Debug|Win32.Build.0 = Debug|Win32
+		{9E81D1FA-B308-4B5A-9189-44BB9A2B65F8}.Release|Win32.ActiveCfg = Release|Win32
+		{9E81D1FA-B308-4B5A-9189-44BB9A2B65F8}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,5 +76,6 @@ Global
 		{498C6B9B-2188-43F9-88AF-BA35D9984364} = {3727518B-49D8-4A28-B363-DD50D2C59FE3}
 		{17F3060E-4434-4CCE-A61C-867189635AB8} = {3727518B-49D8-4A28-B363-DD50D2C59FE3}
 		{80FD35A9-3E1C-4AAD-990C-5BE9265334A9} = {3727518B-49D8-4A28-B363-DD50D2C59FE3}
+		{9E81D1FA-B308-4B5A-9189-44BB9A2B65F8} = {3727518B-49D8-4A28-B363-DD50D2C59FE3}
 	EndGlobalSection
 EndGlobal
