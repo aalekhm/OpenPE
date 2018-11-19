@@ -4,3 +4,4 @@
 #include "OpenPEPropertiesGeneric.h"
 #include "OpenPEFactory.h"
 #include "OpenPEChecksum.h"
+#include "OpenPEDotNet.h"

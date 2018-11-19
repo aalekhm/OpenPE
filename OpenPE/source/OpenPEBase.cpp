@@ -612,6 +612,256 @@ namespace OpenPE
 		}
 	}
 
+	// Returns Section from Directory ID
+	PESection& PEBase::getSectionFromDirectory(uint32_t iDirectoryID)
+	{
+		return getSectionFromRVA(getDirectoryRVA(iDirectoryID));
+	}
+
+	// Returns Section from Directory ID
+	const PESection& PEBase::getSectionFromDirectory(uint32_t iDirectoryID) const
+	{
+		return getSectionFromRVA(getDirectoryRVA(iDirectoryID));
+	}
+
+	// Returns Section from VA inside it for PE32
+	PESection& PEBase::getSectionFromVA(uint32_t iVA)
+	{
+		return getSectionFromRVA(getVAToRVA(iVA));
+	}
+	
+	// Returns Section from VA inside it for PE32
+	const PESection& PEBase::getSectionFromVA(uint32_t iVA) const
+	{
+		return getSectionFromRVA(getVAToRVA(iVA));
+	}
+
+	// Returns Section from VA inside it for PE64
+	PESection& PEBase::getSectionFromVA(uint64_t iVA)
+	{
+		return getSectionFromRVA(getVAToRVA(iVA));
+	}
+
+	// Returns Section from VA inside it for PE64
+	const PESection& PEBase::getSectionFromVA(uint64_t iVA) const
+	{
+		return getSectionFromRVA(getVAToRVA(iVA));
+	}
+
+	// Returns Section from File Offset (4GB max)
+	PESection& PEBase::getSectionFromFileOffset(uint32_t iFileOffset)
+	{
+		return *getFileOffsetToSection(iFileOffset);
+	}
+
+	const PESection& PEBase::getSectionFromFileOffset(uint32_t iFileOffset) const
+	{
+		return *getFileOffsetToSection(iFileOffset);
+	}
+
+	// Returns section TOTAL RAW/VIRTUAL data length from RVA inside section
+	// If include_headers = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+	uint32_t PEBase::getSectionDataLengthFromRVA(uint32_t iRVA, SECTION_DATA_TYPE eSectionDataType, bool bIncludeHeaders) const
+	{
+		// If RVA is inside of headers and we're searching them too...
+		if (bIncludeHeaders && iRVA < m_sFullHeadersData.length())
+		{
+			return static_cast<unsigned long>(m_sFullHeadersData.length());
+		}
+
+		const PESection& peSection = getSectionFromRVA(iRVA);
+		return static_cast<unsigned long>(	eSectionDataType == SECTION_DATA_RAW ? 
+											peSection.getRawData().length() : /* instead of SizeOfRawData */
+											peSection.getAlignedVirtualSize(getSectionAlignment()));
+	}
+
+	// Returns section TOTAL RAW/VIRTUAL data length from VA inside section for PE32 and PE64 respectively
+	// If include_headers = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+	uint32_t PEBase::getSectionDataLengthFromVA(uint32_t iVA, SECTION_DATA_TYPE eSectionDataType , bool bIncludeHeaders) const
+	{
+		return getSectionDataLengthFromRVA(getVAToRVA(iVA), eSectionDataType, bIncludeHeaders);
+	}
+
+	// Returns section TOTAL RAW/VIRTUAL data length from VA inside section for PE32 and PE64 respectively
+	// If include_headers = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+	uint32_t PEBase::getSectionDataLengthFromVA(uint64_t iVA, SECTION_DATA_TYPE eSectionDataType, bool bIncludeHeaders) const
+	{
+		return getSectionDataLengthFromRVA(getVAToRVA(iVA), eSectionDataType, bIncludeHeaders);
+	}
+
+	// Returns section remaining RAW/VIRTUAL data length from RVA to the end of section "s" (checks bounds)
+	uint32_t PEBase::getSectionDataLengthFromRVA(const PESection& peSection, uint32_t iRVAInside, SECTION_DATA_TYPE eSectionDataType) const
+	{
+		// Check iRVAInside
+		if (	iRVAInside >= peSection.getVirtualAddress() 
+				&& 
+				iRVAInside < peSection.getVirtualAddress() + peSection.getAlignedVirtualSize(getSectionAlignment())
+		) {
+			// Calculate remaining length of section data from "rva" address
+			int32_t iLength = static_cast<int32_t>(	eSectionDataType == SECTION_DATA_RAW ? 
+													peSection.getRawData().length() : /* instead of SizeOfRawData */
+													peSection.getAlignedVirtualSize(getSectionAlignment())
+												) + peSection.getVirtualAddress() - iRVAInside;
+
+			if (iLength < 0)
+				return 0;
+
+			return static_cast<uint32_t>(iLength);
+		}
+
+		throw PEException("RVA not found inside Section", PEException::PEEXCEPTION_RVA_DOESNT_NOT_EXISTS);
+	}
+
+	// Returns section remaining RAW/VIRTUAL data length from VA to the end of section "s" for PE32 and PE64 respectively (checks bounds)
+	uint32_t PEBase::getSectionDataLengthFromVA(const PESection& peSection, uint32_t iVAInside, SECTION_DATA_TYPE eSectionDataType) const
+	{
+		return getSectionDataLengthFromRVA(peSection, getVAToRVA(iVAInside), eSectionDataType);
+	}
+
+	// Returns section remaining RAW/VIRTUAL data length from VA to the end of section "s" for PE32 and PE64 respectively (checks bounds)
+	uint32_t PEBase::getSectionDataLengthFromVA(const PESection& peSection, uint64_t iVAInside, SECTION_DATA_TYPE eSectionDataType) const
+	{
+		return getSectionDataLengthFromRVA(peSection, getVAToRVA(iVAInside), eSectionDataType);
+	}
+
+	//Returns section remaining RAW/VIRTUAL data length from RVA "rva_inside" to the end of section containing RVA "rva"
+	//If include_headers = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+	uint32_t PEBase::getSectionDataLengthFromRVA(uint32_t iRVA, uint32_t iRVAInside, SECTION_DATA_TYPE eSectionDataType, bool bIncludeHeaders) const
+	{
+		//if RVAs are inside of headers and we're searching them too...
+		if (bIncludeHeaders && iRVA < m_sFullHeadersData.length() && iRVAInside < m_sFullHeadersData.length())
+			return static_cast<unsigned long>(m_sFullHeadersData.length() - iRVAInside);
+
+		const PESection& peSection = getSectionFromRVA(iRVA);
+		if (iRVAInside < peSection.getVirtualAddress())
+			throw PEException("RVA not found inside section", PEException::PEEXCEPTION_RVA_DOESNT_NOT_EXISTS);
+
+		//Calculate remaining length of section data from "rva" address
+		long iLength = static_cast<long>(	eSectionDataType == SECTION_DATA_TYPE::SECTION_DATA_RAW ? 
+											peSection.getRawData().length() /* instead of SizeOfRawData */ : 
+											peSection.getAlignedVirtualSize(getSectionAlignment())
+										) + peSection.getVirtualAddress() - iRVAInside;
+
+		if (iLength < 0)
+			return 0;
+
+		return static_cast<unsigned long>(iLength);
+	}
+
+	//Returns section remaining RAW/VIRTUAL data length from VA "va_inside" to the end of section containing VA "va" for PE32 and PE64 respectively
+	//If include_headers = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+	uint32_t PEBase::getSectionDataLengthFromVA(uint32_t iVA, uint32_t iVAInside, SECTION_DATA_TYPE eSectionDataType, bool bIncludeHeaders) const
+	{
+		return getSectionDataLengthFromRVA(getVAToRVA(iVA), getVAToRVA(iVAInside), eSectionDataType, bIncludeHeaders);
+	}
+
+	uint32_t PEBase::getSectionDataLengthFromVA(uint64_t iVA, uint64_t iVAInside, SECTION_DATA_TYPE eSectionDataType, bool bIncludeHeaders) const
+	{
+		return getSectionDataLengthFromRVA(getVAToRVA(iVA), getVAToRVA(iVAInside), eSectionDataType, bIncludeHeaders);
+	}
+
+	//If include_headers = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+	//Returns corresponding section data pointer from RVA inside section
+	char* PEBase::getSectionDataFromRVA(uint32_t iRVA, bool bIncludeHeaders)
+	{
+		//if RVA is inside of headers and we're searching them too...
+		if (bIncludeHeaders && iRVA < m_sFullHeadersData.length())
+			return &m_sFullHeadersData[iRVA];
+
+		PESection& peSection = getSectionFromRVA(iRVA);
+
+		if (peSection.getRawData().empty())
+			throw PEException("Section raw data is empty and cannot be changed", PEException::PEEXCEPTION_SECTION_DOESNT_NOT_EXISTS);
+
+		return &peSection.getRawData()[iRVA - peSection.getVirtualAddress()];
+	}
+
+	const char* PEBase::getSectionDataFromRVA(uint32_t iRVA, SECTION_DATA_TYPE eSectionDataType, bool bIncludeHeaders) const
+	{
+		//if RVA is inside of headers and we're searching them too...
+		if (bIncludeHeaders && iRVA < m_sFullHeadersData.length())
+			return &m_sFullHeadersData[iRVA];
+
+		const PESection& peSection = getSectionFromRVA(iRVA);
+		return (	eSectionDataType == SECTION_DATA_RAW 
+					? peSection.getRawData().data() 
+					: peSection.getVirtualData(getSectionAlignment()).c_str()) + iRVA - peSection.getVirtualAddress();
+	}
+
+	//Returns corresponding section data pointer from VA inside section for PE32 and PE64 respectively
+	char* PEBase::getSectionDataFromVA(uint32_t iVA, bool bIncludeHeaders)
+	{
+		return getSectionDataFromRVA(getVAToRVA(iVA), bIncludeHeaders);
+	}
+
+	const char* PEBase::getSectionDataFromVA(uint32_t iVA, SECTION_DATA_TYPE eSectionDataType, bool bIncludeHeaders) const
+	{
+		return getSectionDataFromRVA(getVAToRVA(iVA), eSectionDataType, bIncludeHeaders);
+	}
+
+	char* PEBase::getSectionDataFromVA(uint64_t iVA, bool bIncludeHeaders)
+	{
+		return getSectionDataFromRVA(getVAToRVA(iVA), bIncludeHeaders);
+	}
+
+	const char* PEBase::getSectionDataFromVA(uint64_t iVA, SECTION_DATA_TYPE eSectionDataType, bool bIncludeHeaders) const
+	{
+		return getSectionDataFromRVA(getVAToRVA(iVA), eSectionDataType, bIncludeHeaders);
+	}
+
+	// Returns corresponding section data pointer from RVA inside section "s" (checks bounds)
+	char* PEBase::getSectionDataFromRVA(PESection& peSection, uint32_t iRVA)
+	{
+		//Check if RVA is inside section "s"
+		if (iRVA >= peSection.getVirtualAddress() && iRVA < peSection.getVirtualAddress() + peSection.getAlignedVirtualSize(getSectionAlignment()))
+		{
+			if (peSection.getRawData().empty())
+				throw PEException("Section raw data is empty and cannot be changed", PEException::PEEXCEPTION_SECTION_DOESNT_NOT_EXISTS);
+
+			return &peSection.getRawData()[iRVA - peSection.getVirtualAddress()];
+		}
+	}
+
+	// Returns corresponding section data pointer from RVA inside section "s" (checks bounds)
+	const char* PEBase::getSectionDataFromRVA(const PESection& peSection, uint32_t iRVA, SECTION_DATA_TYPE eSectionDataType) const
+	{
+		//Check if RVA is inside section "s"
+		if (	iRVA >= peSection.getVirtualAddress() 
+				&& 
+				iRVA < peSection.getVirtualAddress() + peSection.getAlignedVirtualSize(getSectionAlignment())
+		)
+			return (	eSectionDataType == SECTION_DATA_RAW 
+						? 
+						peSection.getRawData().data() 
+						: 
+						peSection.getVirtualData(getSectionAlignment()).c_str()) + iRVA - peSection.getVirtualAddress();
+
+		throw PEException("RVA not found inside section", PEException::PEEXCEPTION_RVA_DOESNT_NOT_EXISTS);
+	}
+
+	// Returns corresponding section data pointer from VA inside section "s" for PE32 and PE64 respectively (checks bounds)
+	char* PEBase::getSectionDataFromVA(PESection& peSection, uint32_t iVA) //Always returns raw data
+	{
+		return getSectionDataFromRVA(peSection, getVAToRVA(iVA));
+	}
+
+	// Returns corresponding section data pointer from VA inside section "s" for PE32 and PE64 respectively (checks bounds)
+	const char* PEBase::getSectionDataFromVA(const PESection& peSection, uint32_t iVA, SECTION_DATA_TYPE eSectionDataType) const
+	{
+		return getSectionDataFromRVA(peSection, getVAToRVA(iVA), eSectionDataType);
+	}
+
+	// Returns corresponding section data pointer from VA inside section "s" for PE32 and PE64 respectively (checks bounds)
+	char* PEBase::getSectionDataFromVA(PESection& peSection, uint64_t iVA) //Always returns raw data
+	{
+		return getSectionDataFromRVA(peSection, getVAToRVA(iVA));
+	}
+
+	// Returns corresponding section data pointer from VA inside section "s" for PE32 and PE64 respectively (checks bounds)
+	const char* PEBase::getSectionDataFromVA(const PESection& peSection, uint64_t iVA, SECTION_DATA_TYPE eSectionDataType) const
+	{
+		return getSectionDataFromRVA(peSection, getVAToRVA(iVA), eSectionDataType);
+	}
 
 	uint16_t PEBase::getPEMagic() const
 	{

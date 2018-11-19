@@ -254,7 +254,7 @@ namespace OpenPE
 	{
 		//Check if directory exists
 		if (NOT directoryExists(iDirectoryID))
-			throw PEException("Specified directory does not exists.", PEException::PEEXCEPTION_DIRECTORY_DOESN_NOT_EXISTS);
+			throw PEException("Specified directory does not exists.", PEException::PEEXCEPTION_DIRECTORY_DOESNT_NOT_EXISTS);
 
 		return m_NTHeader.OptionalHeader.DataDirectory[iDirectoryID].RVA;
 	}
@@ -264,7 +264,7 @@ namespace OpenPE
 	{
 		//Check if directory exists
 		if (NOT directoryExists(iDirectoryID))
-			throw PEException("Specified directory does not exists.", PEException::PEEXCEPTION_DIRECTORY_DOESN_NOT_EXISTS);
+			throw PEException("Specified directory does not exists.", PEException::PEEXCEPTION_DIRECTORY_DOESNT_NOT_EXISTS);
 
 		return m_NTHeader.OptionalHeader.DataDirectory[iDirectoryID].Size;
 	}

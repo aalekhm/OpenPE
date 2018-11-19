@@ -312,6 +312,82 @@ namespace OpenPE
 		uint32_t			Characteristics;
 	};
 
+	// CLR 2.0 Header Structure
+	struct IMAGE_CLR20_HEADER
+	{
+		// Header Versioning
+		uint32_t				iCB;
+		uint16_t				iMajorRuntimeVersion;
+		uint16_t				iMinorRuntimeVersion;
+
+		// Symbol Table & Startup information
+		Image_Data_Directory	ImgDataDir_MetaData;
+		uint32_t				iFlags;
+
+		// If COMIMAGE_FLAGS_NATIVE_ENRTYPOINT is not set,	EntryPointToken represents a managed EntryPoint.
+		// If COMIMAGE_FLAGS_NATIVE_ENRTYPOINT is set,		EntryPointRVA represents a RVA to native EntryPoint.
+		union
+		{
+			uint32_t			iEntryPointToken;
+			uint32_t			iEntryPointRVA;
+		};
+
+		// Binding information
+		Image_Data_Directory	ImgDataDir_Resources;
+		Image_Data_Directory	ImgDataDir_StrongNameSignature;
+
+		// Regular Fixup & Binding information
+		Image_Data_Directory	ImgDataDir_CodeManagerTable;
+		Image_Data_Directory	ImgDataDir_VTableFixups;
+		Image_Data_Directory	ImgDataDir_ExportAddressTableJumps;
+
+		// Precompiled Image info (internal use only - set to zero)
+		Image_Data_Directory	ImgDataDir_ManagedNativeHeader;
+	};
+
+	// Enum found in winnt.h by name 'ReplacesCorHdrNumericDefines'
+	enum REPLACES_COMMONOBJRUNTIME_HEADER_NUMERIC_DEFINES
+	{
+		// COM+ Header entry point flags.
+		COMIMAGE_FLAGS_ILONLY						= 0x00000001,
+		COMIMAGE_FLAGS_32BITREQUIRED				= 0x00000002,
+		COMIMAGE_FLAGS_IL_LIBRARY					= 0x00000004,
+		COMIMAGE_FLAGS_STRONGNAMESIGNED				= 0x00000008,
+		COMIMAGE_FLAGS_NATIVE_ENTRYPOINT			= 0x00000010,
+		COMIMAGE_FLAGS_TRACKDEBUGDATA				= 0x00010000,
+
+		// Version flags for image.
+		COR_VERSION_MAJOR_V2						= 2,
+		COR_VERSION_MAJOR							= COR_VERSION_MAJOR_V2,
+		COR_VERSION_MINOR							= 5,
+		COR_DELETED_NAME_LENGTH						= 8,
+		COR_VTABLEGAP_NAME_LENGTH					= 8,
+
+		// Maximum size of a NativeType descriptor.
+		NATIVE_TYPE_MAX_CB							= 1,
+		COR_ILMETHOD_SECT_SMALL_MAX_DATASIZE		= 0xFF,
+
+		// #defines for the MIH FLAGS
+		IMAGE_COR_MIH_METHODRVA						= 0x01,
+		IMAGE_COR_MIH_EHRVA							= 0x02,
+		IMAGE_COR_MIH_BASICBLOCK					= 0x08,
+
+		// V-table constants
+		COR_VTABLE_32BIT							= 0x01,          // V-table slots are 32-bits in size.
+		COR_VTABLE_64BIT							= 0x02,          // V-table slots are 64-bits in size.
+		COR_VTABLE_FROM_UNMANAGED					= 0x04,          // If set, transition from unmanaged.
+		COR_VTABLE_FROM_UNMANAGED_RETAIN_APPDOMAIN	= 0x08,  // If set, transition from unmanaged with keeping the current appdomain.
+		COR_VTABLE_CALL_MOST_DERIVED				= 0x10,          // Call most derived method described by
+
+		// EATJ constants
+		IMAGE_COR_EATJ_THUNK_SIZE					= 32,            // Size of a jump thunk reserved range.
+
+		// Max name lengths
+		//@todo: Change to unlimited name lengths.
+		MAX_CLASS_NAME								= 1024,
+		MAX_PACKAGE_NAME							= 1024,
+	};
+
 //#define SAVE_ISTREAM_STATE(__iFileStream__) \
 //	std::ios_base::iostate iState = __iFileStream__.exceptions(); \
 //	std::streamoff oldStreamOffset = __iFileStream__.tellg(); \

@@ -1,9 +1,11 @@
 #pragma once
 
 #include <istream>					// for 'std::istream'
+#include "OpenPEException.h"
 #include "OpenPEStructures.h"		// for PE all related structures.
 #include "OpenPEIProperties.h"		// IProperties interface
 #include "OpenPESection.h"
+#include "OpenPEUtils.h"
 
 namespace OpenPE
 {
@@ -80,7 +82,143 @@ namespace OpenPE
 			PESection&				getSectionFromRVA(uint32_t iRVA);
 			const PESection&		getSectionFromRVA(uint32_t iRVA) const;
 
+			// Returns Section from Directory ID
+			PESection&				getSectionFromDirectory(uint32_t iDirectoryID);
+			const PESection&		getSectionFromDirectory(uint32_t iDirectoryID) const;
 
+			// Returns Section from VA inside it for PE32 & PE64 respectively
+			PESection&				getSectionFromVA(uint32_t iVA);
+			const PESection&		getSectionFromVA(uint32_t iVA) const;
+
+			PESection&				getSectionFromVA(uint64_t iVA);
+			const PESection&		getSectionFromVA(uint64_t iVA) const;
+
+			// Returns Section from File Offset (4GB max)
+			PESection&				getSectionFromFileOffset(uint32_t iFileOffset);
+			const PESection&		getSectionFromFileOffset(uint32_t iFileOffset) const;
+
+			////////////////////////////////////////////////////
+			// Returns section TOTAL RAW/VIRTUAL data length from RVA inside section
+			// If bIncludeHeaders = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+			uint32_t				getSectionDataLengthFromRVA(uint32_t iRVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const;
+
+			// Returns section TOTAL RAW/VIRTUAL data length from VA inside section for PE32 and PE64 respectively
+			// If bIncludeHeaders = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+			uint32_t				getSectionDataLengthFromVA(uint32_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const;
+			uint32_t				getSectionDataLengthFromVA(uint64_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const;
+			////////////////////////////////////////////////////
+			// Returns section remaining RAW/VIRTUAL data length from RVA to the end of section "s" (checks bounds)
+			uint32_t				getSectionDataLengthFromRVA(const PESection& peSection, uint32_t iRVAInside, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW) const;
+
+			// Returns section remaining RAW/VIRTUAL data length from VA to the end of section "s" for PE32 and PE64 respectively (checks bounds)
+			uint32_t				getSectionDataLengthFromVA(const PESection& peSection, uint32_t iVAInside, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW) const;
+			uint32_t				getSectionDataLengthFromVA(const PESection& peSection, uint64_t iVAInside, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW) const;
+			////////////////////////////////////////////////////
+			// Returns section remaining RAW/VIRTUAL data length from RVA "rva_inside" to the end of section containing RVA "rva"
+			// If bIncludeHeaders = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+			uint32_t				getSectionDataLengthFromRVA(uint32_t iRVA, uint32_t iRVAInside, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const;
+
+			// Returns section remaining RAW/VIRTUAL data length from VA "va_inside" to the end of section containing VA "va" for PE32 and PE64 respectively
+			// If bIncludeHeaders = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+			uint32_t				getSectionDataLengthFromVA(uint32_t iVA, uint32_t iVAInside, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const;
+			uint32_t				getSectionDataLengthFromVA(uint64_t iVA, uint64_t iVAInside, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const;
+			////////////////////////////////////////////////////
+			// If bIncludeHeaders = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+			// Returns corresponding section data pointer from RVA inside section
+			char*					getSectionDataFromRVA(uint32_t iRVA, bool bIncludeHeaders = false);
+			const char*				getSectionDataFromRVA(uint32_t iRVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const;
+
+			// Returns corresponding section data pointer from VA inside section for PE32 and PE64 respectively
+			char*					getSectionDataFromVA(uint32_t iVA, bool bIncludeHeaders = false);
+			const char*				getSectionDataFromVA(uint32_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const;
+			char*					getSectionDataFromVA(uint64_t iVA, bool bIncludeHeaders = false);
+			const char*				getSectionDataFromVA(uint64_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const;
+			////////////////////////////////////////////////////
+			// Returns corresponding section data pointer from RVA inside section "s" (checks bounds)
+			char*					getSectionDataFromRVA(PESection& peSection, uint32_t iRVA);
+			const char*				getSectionDataFromRVA(const PESection& peSection, uint32_t iRVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW) const;
+
+			// Returns corresponding section data pointer from VA inside section "s" for PE32 and PE64 respectively (checks bounds)
+			char*					getSectionDataFromVA(PESection& peSection, uint32_t iVA); //Always returns raw data
+			const char*				getSectionDataFromVA(const PESection& peSection, uint32_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW) const;
+			char*					getSectionDataFromVA(PESection& peSection, uint64_t iVA); //Always returns raw data
+			const char*				getSectionDataFromVA(const PESection& peSection, uint64_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW) const;
+			////////////////////////////////////////////////////
+
+			//Returns corresponding section data pointer from RVA inside section "s" (checks bounds, checks sizes, the most safe function)
+			template<typename T>
+			T getSectionDataFromRVA(const PESection& s, uint32_t rva, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW) const
+			{
+				if (iRVA >= peSection.getVirtualAddress() && iRVA < peSection.getVirtualAddress() + peSection.getAlignedVirtualSize(getSectionAlignment()) && PEUtils::isSumSafess(iRVA, sizeof(T)))
+				{
+					const std::string& sData = (eSectionDataType == SECTION_DATA_RAW) 
+												? 
+												peSection.getRawData() 
+												: 
+												peSection.getVirtualData(getSectionAlignment());
+
+					//Don't check for underflow here, comparsion is unsigned
+					if (sData.size() < iRVA - peSection.getVirtualAddress() + sizeof(T))
+						throw PEException("RVA and requested data size does not exist inside section", PEException::PEEXCEPTION_RVA_DOESNT_NOT_EXISTS);
+
+					return *reinterpret_cast<const T*>(sData.data() + iRVA - peSection.getVirtualAddress());
+				}
+
+				throw PEException("RVA not found inside section", PEException::rva_not_exists);
+			}
+
+			//Returns corresponding section data pointer from RVA inside section (checks iRVA, checks sizes, the most safe function)
+			//If bIncludeHeaders = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+			template<typename T>
+			T getSectionDataFromRVA(uint32_t iRVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const
+			{
+				//if RVA is inside of headers and we're searching them too...
+				if (	bIncludeHeaders 
+						&& 
+						PEUtils::isSumSafe(iRVA, sizeof(T)) && (iRVA + sizeof(T) < m_sFullHeadersData.length())
+				)
+					return *reinterpret_cast<const T*>(&m_sFullHeadersData[iRVA]);
+
+				const PESection& peSection = getSectionFromRVA(iRVA);
+				const std::string& sData = (eSectionDataType == SECTION_DATA_RAW)
+											? 
+											peSection.getRawData() 
+											: 
+											peSection.getVirtualData(getSectionAlignment());
+
+				//Don't check for underflow here, comparsion is unsigned
+				if (sData.size() < iRVA - peSection.getVirtualAddress() + sizeof(T))
+					throw PEException("RVA and requested data size does not exist inside section", PEException::PEEXCEPTION_RVA_DOESNT_NOT_EXISTS);
+
+				return *reinterpret_cast<const T*>(sData.data() + iRVA - peSection.getVirtualAddress());
+			}
+
+			//Returns corresponding section data pointer from VA inside section "s" (checks bounds, checks sizes, the most safe function)
+			template<typename T>
+			T getSectionDataFromVA(const PESection& s, uint32_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW) const
+			{
+				return getSectionDataFromRVA<T>(s, getVAToRVA(iVA), eSectionDataType);
+			}
+
+			template<typename T>
+			T getSectionDataFromVA(const PESection& s, uint64_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW) const
+			{
+				return getSectionDataFromRVA<T>(s, getVAToRVA(iVA), eSectionDataType);
+			}
+
+			//Returns corresponding section data pointer from VA inside section (checks rva, checks sizes, the most safe function)
+			//If bIncludeHeaders = true, data from the beginning of PE file to SizeOfHeaders will be searched, too
+			template<typename T>
+			T section_data_from_va(uint32_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const
+			{
+				return getSectionDataFromRVA<T>(getVAToRVA(iVA), eSectionDataType, bIncludeHeaders);
+			}
+
+			template<typename T>
+			T getSectionDataFromRVA(uint64_t iVA, SECTION_DATA_TYPE eSectionDataType = SECTION_DATA_RAW, bool bIncludeHeaders = false) const
+			{
+				return getSectionDataFromRVA<T>(getVAToRVA(iVA), eSectionDataType, bIncludeHeaders);
+			}
 	public:
 			// PE Headers
 

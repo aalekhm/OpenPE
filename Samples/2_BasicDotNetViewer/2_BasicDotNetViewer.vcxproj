@@ -11,15 +11,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7BD01922-0EB2-4ADE-9F8B-DE6D2650A0ED}</ProjectGuid>
-    <RootNamespace>OpenPE</RootNamespace>
+    <ProjectGuid>{1C4158DC-B24D-47AA-BADF-FBA8DBE941A2}</ProjectGuid>
+    <RootNamespace>My2_BasicDotNetViewer</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -38,22 +38,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetExt>.lib</TargetExt>
-    <IncludePath>$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)$(ProjectName)\lib\</OutDir>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>
-      </SDLCheck>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\OpenPE\include;..</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\OpenPE\lib;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -71,27 +67,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\OpenPE.h" />
-    <ClInclude Include="include\OpenPEBase.h" />
-    <ClInclude Include="include\OpenPEChecksum.h" />
-    <ClInclude Include="include\OpenPEDotNet.h" />
-    <ClInclude Include="include\OpenPEException.h" />
-    <ClInclude Include="include\OpenPEFactory.h" />
-    <ClInclude Include="include\OpenPEIProperties.h" />
-    <ClInclude Include="include\OpenPEPropertiesGeneric.h" />
-    <ClInclude Include="include\OpenPESection.h" />
-    <ClInclude Include="include\OpenPEStructures.h" />
-    <ClInclude Include="include\OpenPEUtils.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="source\OpenPEBase.cpp" />
-    <ClCompile Include="source\OpenPEChecksum.cpp" />
-    <ClCompile Include="source\OpenPEDotNet.cpp" />
-    <ClCompile Include="source\OpenPEException.cpp" />
-    <ClCompile Include="source\OpenPEFactory.cpp" />
-    <ClCompile Include="source\OpenPEPropertiesGeneric.cpp" />
-    <ClCompile Include="source\OpenPESection.cpp" />
-    <ClCompile Include="source\OpenPEUtils.cpp" />
+    <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
