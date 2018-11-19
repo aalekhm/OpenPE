@@ -49,6 +49,11 @@ namespace OpenPE
 
 	PEBase::PEBase(const PEBase& pe)
 		: m_DOSHeader(pe.m_DOSHeader)
+		, m_sRichOverlay(pe.m_sRichOverlay)
+		, m_vSections(pe.m_vSections)
+		, m_bHasOverlay(pe.m_bHasOverlay)
+		, m_sFullHeadersData(pe.m_sFullHeadersData)
+		//, m_DebugData(pe.m_DebugData)
 		, m_pProperties(0)
 	{
 		m_pProperties = pe.m_pProperties->duplicate().release();
@@ -246,7 +251,7 @@ namespace OpenPE
 			std::streamoff iNextOffset = pFileStream.tellg();
 
 			// Check Section Virtual & Raw Sizes
-			THROW_EXCEPTION_IF_BAD_FILESTREAM(pFileStream, "Physical & Virtual Sizes of a Section cannot be 0 at the same time.", PEException::PEException_IMAGE_SECTION_ZERO_SIZES);
+			THROW_EXCEPTION_IF_BAD_FILESTREAM(pFileStream, "Physical & Virtual Sizes of a Section cannot be 0 at the same time.", PEException::PEEXCEPTION_IMAGE_SECTION_ZERO_SIZES);
 
 			// Check for adequate Section values
 			if (	NOT PEUtils::isSumSafe(peSection.getVirtualAddress(), peSection.getVirtualSize())
@@ -257,7 +262,7 @@ namespace OpenPE
 					||
 					NOT peSection.getSizeOfRawData() > PEUtils::TWO_GB
 			)
-				THROW_PEEXCEPTION("Incorrect Section addresses or Sizes", PEException::PEException_IMAGE_SECTION_INCORRECT_ADDRESS_OR_SIZES);
+				THROW_PEEXCEPTION("Incorrect Section addresses or Sizes", PEException::PEEXCEPTION_IMAGE_SECTION_INCORRECT_ADDRESS_OR_SIZES);
 
 			if (peSection.getSizeOfRawData() != 0)
 			{
@@ -276,23 +281,23 @@ namespace OpenPE
 						||
 						PEUtils::alignDown(peSection.getPointerToRawData(), getFileAlignment()) + peSection.getSizeOfRawData() > static_cast<uint32_t>(iFileSize)
 				){
-					THROW_PEEXCEPTION("Incorrect Section address or Size.", PEException::PEException_IMAGE_SECTION_INCORRECT_ADDRESS_OR_SIZES);
+					THROW_PEEXCEPTION("Incorrect Section address or Size.", PEException::PEEXCEPTION_IMAGE_SECTION_INCORRECT_ADDRESS_OR_SIZES);
 				}
 
 				// Seek to Section raw Data
 				pFileStream.seekg(PEUtils::alignDown(peSection.getPointerToRawData(), getFileAlignment()));
-				THROW_EXCEPTION_IF_BAD_FILESTREAM(pFileStream, "Cannot reach Section Data.", PEException::PEException_IMAGE_SECTION_DATA_NOT_FOUND);
+				THROW_EXCEPTION_IF_BAD_FILESTREAM(pFileStream, "Cannot reach Section Data.", PEException::PEEXCEPTION_IMAGE_SECTION_DATA_NOT_FOUND);
 
 				// Read Section Raw Data
 				peSection.getRawData().resize(peSection.getSizeOfRawData());
 				pFileStream.read(&peSection.getRawData()[0], peSection.getSizeOfRawData());
-				THROW_EXCEPTION_IF_BAD_FILESTREAM(pFileStream, "Error reading Section Data.", PEException::PEException_IMAGE_SECTION_ERROR_READING_SECTION_DATA);
+				THROW_EXCEPTION_IF_BAD_FILESTREAM(pFileStream, "Error reading Section Data.", PEException::PEEXCEPTION_IMAGE_SECTION_ERROR_READING_SECTION_DATA);
 			}
 
 			// Check Virtual address & size of Section
 			if (peSection.getVirtualAddress() + peSection.getAlignedVirtualSize(getSectionAlignment()) > PEUtils::alignUp(getSizeOfImage(), getSectionAlignment()))
 			{
-				THROW_PEEXCEPTION("Incorrect Section address or Size.", PEException::PEException_IMAGE_SECTION_INCORRECT_ADDRESS_OR_SIZES);
+				THROW_PEEXCEPTION("Incorrect Section address or Size.", PEException::PEEXCEPTION_IMAGE_SECTION_INCORRECT_ADDRESS_OR_SIZES);
 			}
 
 			// Save Section
@@ -318,7 +323,7 @@ namespace OpenPE
 				PESection& pePrevSection = *(i-1);
 				if(peSection.getVirtualAddress() != pePrevSection.getVirtualAddress() + pePrevSection.getAlignedVirtualSize(getSectionAlignment()))
 				{
-					THROW_PEEXCEPTION("Section Table is incorrect.", PEException::PEException_IMAGE_SECTION_TABLE_INCORRECT);
+					THROW_PEEXCEPTION("Section Table is incorrect.", PEException::PEEXCEPTION_IMAGE_SECTION_TABLE_INCORRECT);
 				}
 			}
 		}
@@ -571,6 +576,43 @@ namespace OpenPE
 		return m_pProperties->getNumberOfSections();
 	}
 
+	// Returns Section from RVA inside it
+	PESection& PEBase::getSectionFromRVA(uint32_t iRVA)
+	{
+		// Search for the Section
+		for (SECTION_LIST::iterator itr = m_vSections.begin(); itr != m_vSections.end(); ++itr)
+		{
+			PESection& peSection = *itr;
+
+			// Return section if found
+			if (	iRVA >= peSection.getVirtualAddress()
+					&&
+					iRVA < peSection.getVirtualAddress() + peSection.getAlignedVirtualSize(getSectionAlignment())
+			) {
+				return peSection;
+			}
+		}
+	}
+
+	// Returns Section from RVA inside it
+	const PESection& PEBase::getSectionFromRVA(uint32_t iRVA) const
+	{
+		// Search for the Section
+		for (SECTION_LIST::const_iterator itr = m_vSections.begin(); itr != m_vSections.end(); ++itr)
+		{
+			const PESection& peSection = *itr;
+
+			// Return section if found
+			if (	iRVA >= peSection.getVirtualAddress()
+					&&
+					iRVA < peSection.getVirtualAddress() + peSection.getAlignedVirtualSize(getSectionAlignment())
+			) {
+				return peSection;
+			}
+		}
+	}
+
+
 	uint16_t PEBase::getPEMagic() const
 	{
 		return m_pProperties->getPEMagic();
@@ -591,6 +633,17 @@ namespace OpenPE
 	uint32_t PEBase::getFileAlignment() const
 	{
 		return m_pProperties->getFileAlignment();
+	}
+
+	// Returns Image Sections
+	SECTION_LIST& PEBase::getImageSectionList()
+	{
+		return m_vSections;
+	}
+
+	const SECTION_LIST& PEBase::getImageSectionList() const
+	{
+		return m_vSections;
 	}
 
 	// Returns Size of the Image
@@ -619,6 +672,92 @@ namespace OpenPE
 	uint64_t PEBase::getImageBase64() const
 	{
 		return m_pProperties->getImageBase64();
+	}
+
+	// Virtual Address(VA) to Relative Virtual Address(RVA) convertion
+	// for PE32 & PE64 respectively
+	uint32_t PEBase::getVAToRVA(uint32_t VA, bool bBoundCheck /*= true*/) const
+	{
+		return m_pProperties->getVAToRVA(VA, bBoundCheck);
+	}
+
+	uint32_t PEBase::getVAToRVA(uint64_t VA, bool bBoundCheck /*= true*/) const
+	{
+		return m_pProperties->getVAToRVA(VA, bBoundCheck);
+	}
+
+	// Relative Virtual Address(RVA) to Virtual Address(VA) convertion
+	// for PE32 & PE64 respectively
+	uint32_t PEBase::getRVAToVA_32(uint32_t RVA) const
+	{
+		return m_pProperties->getRVAToVA_32(RVA);
+	}
+
+	void PEBase::getRVAToVA_32(uint32_t RVA, uint32_t& VA) const
+	{
+		VA = getRVAToVA_32(RVA);
+	}
+
+	uint32_t PEBase::getRVAToVA_64(uint32_t RVA) const
+	{
+		return m_pProperties->getRVAToVA_64(RVA);
+	}
+
+	void PEBase::getRVAToVA_64(uint32_t RVA, uint64_t& VA) const
+	{
+		VA = getRVAToVA_64(RVA);
+	}
+
+	// RVA to RAW File Offset convertion(4GB max)
+	uint32_t PEBase::getRVAToFileOffset(uint32_t RVA) const
+	{
+		// Maybe, RVA is inside PE Headers
+		if (RVA < getSizeOfHeaders())
+			return RVA;
+
+		const PESection& s = getSectionFromRVA(RVA);
+		return s.getPointerToRawData() + RVA - s.getVirtualAddress();
+	}
+
+	//  RAW to RVAFile Offset convertion(4GB max)
+	uint32_t PEBase::getFileOffsetToRVA(uint32_t iFileOffset) const
+	{
+		// Maybe, offset is inside PE headers
+		if (iFileOffset < getSizeOfHeaders())
+		{
+			return iFileOffset;
+		}
+
+		const SECTION_LIST::const_iterator itr = getFileOffsetToSection(iFileOffset);
+		return iFileOffset - (*itr).getPointerToRawData() + (*itr).getVirtualAddress();
+	}
+
+	SECTION_LIST::iterator PEBase::getFileOffsetToSection(uint32_t iFileOffset)
+	{
+		SECTION_LIST::iterator itr = std::find_if(m_vSections.begin(), m_vSections.end(), PESection_By_Raw_Offset(iFileOffset));
+		if (itr != m_vSections.end())
+		{
+			throw PEException("No section found that accommodates the file offset", PEException::PEEXXEPTION_NO_SECTION_FOUND);
+		}
+
+		return itr;
+	}
+
+	SECTION_LIST::const_iterator PEBase::getFileOffsetToSection(uint32_t iFileOffset) const
+	{
+		SECTION_LIST::const_iterator itr = std::find_if(m_vSections.begin(), m_vSections.end(), PESection_By_Raw_Offset(iFileOffset));
+		if (itr != m_vSections.end())
+		{
+			throw PEException("No section found that accommodates the file offset", PEException::PEEXXEPTION_NO_SECTION_FOUND);
+		}
+
+		return itr;
+	}
+
+	// RVA from Section Offset
+	uint32_t PEBase::getRVAFromSectionOffset(const PESection& peSection, uint32_t iRawOffsetFromSectionStart)
+	{
+		return peSection.getVirtualAddress() + iRawOffsetFromSectionStart;
 	}
 
 	PEBase::~PEBase()

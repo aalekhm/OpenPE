@@ -20,9 +20,11 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	std::cout << "Opening PE File >> " << argv[1] << std::endl;
+
 	try
 	{
-		PEBase peImage(PEFactory::createPE(peFile));
+		PEBase peImage(PEFactory::createPE(peFile, false));
 
 		std::cout << "***** OpenPE *****"			<< std::hex << std::showbase								<< std::endl;
 		std::cout << "PE File Type: "				<< (peImage.getPEType() == PEType::PEType_32 ? "PE32 (PE)" : "PE64 (PE+)") << std::endl;

@@ -140,6 +140,19 @@ namespace OpenPE
 			// Returns Directory Size
 			virtual	uint32_t						getDirectorySize(uint32_t iDirectoryID) const;
 		public:
+			// Address Convertion
+
+			// Virtual Address(VA) to Relative Virtual Address(RVA) convertion
+			// for PE32 & PE64 respectively
+			// Bound checks & Integer Overflow
+			uint32_t								getVAToRVA(uint32_t VA, bool bBoundCheck = true) const;
+			uint32_t								getVAToRVA(uint64_t VA, bool bBoundCheck = true) const;
+
+			// Relative Virtual Address(RVA) to Virtual Address(VA) convertion
+			// for PE32 & PE64 respectively
+			uint32_t								getRVAToVA_32(uint32_t RVA) const;
+			uint32_t								getRVAToVA_64(uint32_t RVA) const;
+		public:
 			// SECTIONS
 
 			// Returns Number of Sections

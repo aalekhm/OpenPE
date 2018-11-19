@@ -11,7 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{A4D8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "View PE Information", "View PE Information", "{3727518B-49D8-4A28-B363-DD50D2C59FE3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BasicInfoViewer", "Samples\BasicInfoViewer\BasicInfoViewer.vcxproj", "{C33D1728-AA68-4DDA-ADF5-88AC18E1246F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "0_BasicInfoViewer", "Samples\0_BasicInfoViewer\0_BasicInfoViewer.vcxproj", "{C33D1728-AA68-4DDA-ADF5-88AC18E1246F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1_AddressConvertions", "Samples\1_AddressConvertions\1_AddressConvertions.vcxproj", "{199B6304-B579-4CCE-967F-A060B08A4A1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{C33D1728-AA68-4DDA-ADF5-88AC18E1246F}.Debug|Win32.Build.0 = Debug|Win32
 		{C33D1728-AA68-4DDA-ADF5-88AC18E1246F}.Release|Win32.ActiveCfg = Release|Win32
 		{C33D1728-AA68-4DDA-ADF5-88AC18E1246F}.Release|Win32.Build.0 = Release|Win32
+		{199B6304-B579-4CCE-967F-A060B08A4A1C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{199B6304-B579-4CCE-967F-A060B08A4A1C}.Debug|Win32.Build.0 = Debug|Win32
+		{199B6304-B579-4CCE-967F-A060B08A4A1C}.Release|Win32.ActiveCfg = Release|Win32
+		{199B6304-B579-4CCE-967F-A060B08A4A1C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -35,5 +41,6 @@ Global
 		{7BD01922-0EB2-4ADE-9F8B-DE6D2650A0ED} = {211B559A-FBBA-4682-8046-4CB33DC8C30E}
 		{3727518B-49D8-4A28-B363-DD50D2C59FE3} = {A4D87E31-0D0C-42DD-A7D8-ADD8DC755666}
 		{C33D1728-AA68-4DDA-ADF5-88AC18E1246F} = {3727518B-49D8-4A28-B363-DD50D2C59FE3}
+		{199B6304-B579-4CCE-967F-A060B08A4A1C} = {3727518B-49D8-4A28-B363-DD50D2C59FE3}
 	EndGlobalSection
 EndGlobal

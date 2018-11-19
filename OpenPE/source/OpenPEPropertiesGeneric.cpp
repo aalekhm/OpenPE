@@ -1,5 +1,6 @@
 #include "OpenPEPropertiesGeneric.h"
 #include "OpenPEException.h"
+#include "OpenPEUtils.h"
 
 namespace OpenPE
 {
@@ -266,6 +267,55 @@ namespace OpenPE
 			throw PEException("Specified directory does not exists.", PEException::PEEXCEPTION_DIRECTORY_DOESN_NOT_EXISTS);
 
 		return m_NTHeader.OptionalHeader.DataDirectory[iDirectoryID].Size;
+	}
+
+	// Virtual Address(VA) to Relative Virtual Address(RVA) convertion
+	// for PE32 & PE64 respectively
+	template<typename PEClassType>
+	uint32_t PEPropertiesGeneric<PEClassType>::getVAToRVA(uint32_t VA, bool bBoundCheck /*= true*/) const
+	{
+		if (	bBoundCheck
+				&&
+				static_cast<uint32_t>(VA) - m_NTHeader.OptionalHeader.ImageBase > PEUtils::MAX_DWORD
+		) {
+			throw PEException("Incorrect Address Conversion", PEException::PEEXCEPTION_INCORRECT_ADDRESS_CONVERSION);
+		}
+
+		return static_cast<uint32_t>(VA - m_NTHeader.OptionalHeader.ImageBase);
+	}
+
+	// Relative Virtual Address (RVA) to Virtual Address (VA) convertions for PE32/PE64
+	template<typename PEClassType>
+	uint32_t PEPropertiesGeneric<PEClassType>::getVAToRVA(uint64_t VA, bool bBoundCheck /*= true*/) const
+	{
+		if(		bBoundCheck
+				&&
+				VA - m_NTHeader.OptionalHeader.ImageBase > PEUtils::MAX_DWORD
+		) {
+			throw PEException("Incorrect Address Conversion", PEException::PEEXCEPTION_INCORRECT_ADDRESS_CONVERSION);
+		}
+
+		return static_cast<uint32_t>(VA - m_NTHeader.OptionalHeader.ImageBase);
+	}
+
+	// Relative Virtual Address(RVA) to Virtual Address(VA) convertion
+	// for PE32 & PE64 respectively
+	template<typename PEClassType>
+	uint32_t PEPropertiesGeneric<PEClassType>::getRVAToVA_32(uint32_t RVA) const
+	{
+		if (NOT PEUtils::isSumSafe(RVA, static_cast<uint32_t>(m_NTHeader.OptionalHeader.ImageBase)))
+		{
+			throw PEException("Incorrect Address Conversion", PEException::PEEXCEPTION_INCORRECT_ADDRESS_CONVERSION);
+		}
+
+		return static_cast<uint32_t>(RVA + m_NTHeader.OptionalHeader.ImageBase);
+	}
+
+	// Relative Virtual Address (RVA) to Virtual Address (VA) convertions for PE32/PE64
+	template<typename PEClassType>
+	uint32_t PEPropertiesGeneric<PEClassType>::getRVAToVA_64(uint32_t RVA) const
+	{
+		return static_cast<uint64_t>(RVA) + m_NTHeader.OptionalHeader.ImageBase;
 	}
 
 	template<typename PEClassType>

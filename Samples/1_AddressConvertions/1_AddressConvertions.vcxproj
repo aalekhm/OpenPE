@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C33D1728-AA68-4DDA-ADF5-88AC18E1246F}</ProjectGuid>
-    <RootNamespace>BasicInfoViewer</RootNamespace>
+    <ProjectGuid>{199B6304-B579-4CCE-967F-A060B08A4A1C}</ProjectGuid>
+    <RootNamespace>My1_AddressConvertions</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -69,11 +69,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\OpenPE\OpenPE.vcxproj">
-      <Project>{7bd01922-0eb2-4ade-9f8b-de6d2650a0ed}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

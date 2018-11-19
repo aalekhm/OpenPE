@@ -117,5 +117,15 @@ namespace OpenPE
 			mutable std::string		m_sRawData;
 	};
 
+	// Section by file offset finder helper (4GB max)
+	struct PESection_By_Raw_Offset
+	{
+		public:
+			explicit PESection_By_Raw_Offset(uint32_t iFileOffset);
+			bool operator()(const PESection& peSection) const ;
+		private:
+			uint32_t m_iOffset;
+	};
+
 	typedef std::vector<PESection>	SECTION_LIST;
 }

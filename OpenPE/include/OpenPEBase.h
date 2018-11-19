@@ -71,6 +71,17 @@ namespace OpenPE
 			// Returns true if image has GUI subsystem
 			bool					isGui() const;
 	public:
+			// Image Sections
+
+			// Returns Number of Sections
+			uint32_t				getNumberOfSections() const;
+
+			// Returns Section from RVA inside it
+			PESection&				getSectionFromRVA(uint32_t iRVA);
+			const PESection&		getSectionFromRVA(uint32_t iRVA) const;
+
+
+	public:
 			// PE Headers
 
 			// Returns NT Headers Data Pointer
@@ -102,9 +113,6 @@ namespace OpenPE
 			// Sets Checksum of PE file
 			void					setChecksum(uint32_t iChecksum);
 
-			// Returns Number of Sections
-			uint32_t				getNumberOfSections() const;
-
 			uint16_t				getPEMagic() const;
 			uint16_t				getNeededMagic() const;
 
@@ -112,6 +120,10 @@ namespace OpenPE
 			virtual uint32_t		getSectionAlignment() const;
 			// Returns File alignment
 			virtual uint32_t		getFileAlignment() const;
+
+			// Returns Image Sections
+			SECTION_LIST&			getImageSectionList();
+			const SECTION_LIST&		getImageSectionList() const;
 
 			// Returns Size of the Image
 			virtual uint32_t		getSizeOfImage() const;
@@ -124,6 +136,29 @@ namespace OpenPE
 			// Returns Image base for PE(32-bit) & PE+(64-bit) respectively
 			uint32_t				getImageBase32() const;
 			uint64_t				getImageBase64() const;
+		public:
+			// Address Convertion
+
+			// Virtual Address(VA) to Relative Virtual Address(RVA) convertion
+			// for PE32 & PE64 respectively
+			// Bound checks & Integer Overflow
+			uint32_t				getVAToRVA(uint32_t VA, bool bBoundCheck = true) const;
+			uint32_t				getVAToRVA(uint64_t VA, bool bBoundCheck = true) const;
+
+			// Relative Virtual Address(RVA) to Virtual Address(VA) convertion
+			// for PE32 & PE64 respectively
+			uint32_t				getRVAToVA_32(uint32_t RVA) const;
+			void					getRVAToVA_32(uint32_t RVA, uint32_t& VA) const;
+			uint32_t				getRVAToVA_64(uint32_t RVA) const;
+			void					getRVAToVA_64(uint32_t RVA, uint64_t& VA) const;
+
+			// RVA to RAW File Offset convertion(4GB max)
+			uint32_t				getRVAToFileOffset(uint32_t RVA) const;
+			//  RAW to RVAFile Offset convertion(4GB max)
+			uint32_t				getFileOffsetToRVA(uint32_t iFileOffset) const;
+
+			// RVA from Section Offset
+			uint32_t				getRVAFromSectionOffset(const PESection& peSection, uint32_t iRawOffsetFromSectionStart);
 		public:
 			// Image
 
@@ -162,5 +197,9 @@ namespace OpenPE
 			std::string				m_sFullHeadersData;
 
 			PEIProperties*			m_pProperties;
+		private:
+			// RAW file offset to section convertion helpers (4GB max)
+			SECTION_LIST::iterator PEBase::getFileOffsetToSection(uint32_t iFileOffset);
+			SECTION_LIST::const_iterator PEBase::getFileOffsetToSection(uint32_t iFileOffset) const;
 	};
 }

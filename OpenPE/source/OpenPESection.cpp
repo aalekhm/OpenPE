@@ -252,4 +252,17 @@ namespace OpenPE
 
 		return *this;
 	}
+
+	PESection_By_Raw_Offset::PESection_By_Raw_Offset(uint32_t iFileOffset)
+		: m_iOffset(iFileOffset)
+	{
+	}
+
+	bool PESection_By_Raw_Offset::operator()(const PESection& peSection) const
+	{
+		return (	m_iOffset >= peSection.getPointerToRawData()
+					&&
+					m_iOffset < peSection.getPointerToRawData() + peSection.getSizeOfRawData()
+				);
+	}
 }
